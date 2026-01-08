@@ -1,0 +1,9 @@
+problem_name: "lid driven cavity"
+properties:
+  rho: 10
+  mu: 1
+mesh:
+  nx: 11
+  lx: 1
+  ny: 11
+  ly: 1
