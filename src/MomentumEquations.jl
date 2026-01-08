@@ -46,7 +46,7 @@ function solve_u_momentum!(tentative_velocity::VectorField2D, d_e::Matrix{Float6
                 #    # TODO: move transients to their own function call
                 #    # b += velocity_old(i, j) * dx_cell * dy_cell / dt
                 #end
-                A_e::Foat64 = -dy_cell / props.rho
+                A_e::Float64 = -dy_cell / props.rho
                 # TODO: add body forces to b
                 #
                 u_old = tentative_velocity.u[i, j]
