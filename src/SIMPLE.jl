@@ -1,0 +1,2 @@
+module SIMPLE
+end
