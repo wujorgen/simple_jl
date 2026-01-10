@@ -1,4 +1,7 @@
-problem_name: "lid driven cavity"
+problem_name: lid driven cavity
+problem_info:
+  dimensions: 2
+  mode: steady
 properties:
   rho: 10
   mu: 1
