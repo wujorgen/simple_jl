@@ -6,6 +6,7 @@ properties:
   rho: 10
   mu: 1
 mesh:
+  type: regular
   nx: 11
   lx: 1
   ny: 11

@@ -17,8 +17,7 @@ u-velocity predictor (SIMPLE) for 2D steady-state simulations
 function solve_u_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::CorrectionCoefficients2D,
     velocity::VectorFieldStaggered2D, pressure::Array{Float64,2},
     props::FluidProperties, grid::GridRegular2D;
-    max_itr::Int=10, tol::Float64=1e-9)::Int64
-    println(tentative_velocity.u.size, tentative_velocity.v.size)
+    max_itr::Int=1, tol::Float64=1e-9)::Int64
     for itr in 1:max_itr
         residual::Float64 = 0.0
         for j in 2:grid.ny-1
@@ -58,6 +57,7 @@ function solve_u_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::Cor
                 #end
                 # TODO: add body forces to b
                 #
+                ccfs.d_u[i, j] = A_e / a_ij
                 u_old = tentative_velocity.u[i, j]
                 tentative_velocity.u[i, j] = (
                     a_ip1 * tentative_velocity.u[i+1, j]
@@ -65,7 +65,6 @@ function solve_u_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::Cor
                     + a_jp1 * tentative_velocity.u[i, j+1]
                     + a_jm1 * tentative_velocity.u[i, j-1]
                     + b) / a_ij
-                ccfs.d_u[i, j] = A_e / a_ij
                 #
                 residual += (tentative_velocity.u[i, j] - u_old)^2
             end
@@ -93,7 +92,7 @@ v-velocity predictor (SIMPLE) for 2D steady-state simulations
 function solve_v_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::CorrectionCoefficients2D,
     velocity::VectorFieldStaggered2D, pressure::Array{Float64,2},
     props::FluidProperties, grid::GridRegular2D;
-    max_itr::Int=10, tol::Float64=1e-9)::Int64
+    max_itr::Int=1, tol::Float64=1e-9)::Int64
     for itr in 1:max_itr
         residual::Float64 = 0.0
         for j in 2:grid.ny
@@ -125,6 +124,7 @@ function solve_v_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::Cor
                 A_n::Float64 = -dx_cell / props.rho
                 b::Float64 = A_n * (pressure[i, j] - pressure[i, j-1])
                 #
+                ccfs.d_v[i, j] = A_n / a_ij
                 v_old = tentative_velocity.v[i, j]
                 tentative_velocity.v[i, j] = (
                     a_ip1 * tentative_velocity.v[i+1, j]
@@ -132,7 +132,6 @@ function solve_v_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::Cor
                     + a_jp1 * tentative_velocity.v[i, j+1]
                     + a_jm1 * tentative_velocity.v[i, j-1]
                     + b) / a_ij
-                ccfs.d_v[i, j] = A_n / a_ij
                 #
                 residual += (tentative_velocity.v[i, j] - v_old)^2
             end

@@ -146,8 +146,8 @@ Members:
 - pressure:
 """
 @kwdef mutable struct RelaxationFactors
-    velocity::Float64 = 0.5
-    pressure::Float64 = 0.5
+    velocity::Float64 = 0.8
+    pressure::Float64 = 0.8
 end
 
 ################## Coefficients ##################
