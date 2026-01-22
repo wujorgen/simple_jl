@@ -13,6 +13,8 @@ using Plots
 
 
 function main()
+    dt::Float64 = 0.01
+
     NX::Int64 = 51
     NY::Int64 = 51
 
@@ -51,12 +53,12 @@ function main()
 
     residual_history = []
     continuity_history = []
-    for otr in 1:500
+    for otr in 1:1000
         velocity_star.u .= velocity.u
         velocity_star.v .= velocity.v
 
-        solve_u_momentum!(velocity_star, ccfs, velocity, pressure, properties, grid, max_itr=1)
-        solve_v_momentum!(velocity_star, ccfs, velocity, pressure, properties, grid, max_itr=1)
+        solve_u_momentum!(velocity_star, ccfs, velocity, pressure, properties, grid, max_itr=1, dt=dt)
+        solve_v_momentum!(velocity_star, ccfs, velocity, pressure, properties, grid, max_itr=1, dt=dt)
         set_velocity_boundaries!(velocity_star, top=LID_VELOCITY)
 
         p_corr .= 0

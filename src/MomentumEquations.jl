@@ -17,7 +17,7 @@ u-velocity predictor (SIMPLE) for 2D steady-state simulations
 function solve_u_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::CorrectionCoefficients2D,
     velocity::VectorFieldStaggered2D, pressure::Array{Float64,2},
     props::FluidProperties, grid::GridRegular2D;
-    max_itr::Int=1, tol::Float64=1e-9)::Int64
+    dt::Float64=0.0, max_itr::Int=1, tol::Float64=1e-9)::Int64
     for itr in 1:max_itr
         residual::Float64 = 0.0
         for j in 2:grid.ny-1
@@ -41,20 +41,18 @@ function solve_u_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::Cor
                     + dx_cell * (v_N - v_S) / 2
                     + dy_cell * (props.mu / props.rho) * (1 / dx_e + 1 / dx_w)
                     + dx_cell * (props.mu / props.rho) * (1 / dy_n + 1 / dy_s))
-                #if dt != Inf64
-                #    # TODO: move transient terms to their own function call - use multiple dispatch!
-                #    a_ij += dx_cell * dy_cell / dt
-                #end
+                if dt != 0.0
+                    a_ij += dx_cell * dy_cell / dt
+                end
                 a_ip1::Float64 = -dy_cell * u_E / 2 + dy_cell * (props.mu / props.rho) / dx_e
                 a_im1::Float64 = dy_cell * u_W / 2 + dy_cell * (props.mu / props.rho) / dx_w
                 a_jp1::Float64 = -dx_cell * v_N / 2 + dx_cell * (props.mu / props.rho) / dy_n
                 a_jm1::Float64 = dx_cell * v_S / 2 + dx_cell * (props.mu / props.rho) / dy_s
                 A_e::Float64 = -dy_cell / props.rho
                 b::Float64 = A_e * (pressure[i, j] - pressure[i-1, j])
-                #if dt != Inf64
-                #    # TODO: move transients to their own function call
-                #    # b += velocity_old(i, j) * dx_cell * dy_cell / dt
-                #end
+                if dt != 0.0
+                    b += velocity.u[i, j] * dx_cell * dy_cell / dt
+                end
                 # TODO: add body forces to b
                 #
                 ccfs.d_u[i, j] = A_e / a_ij
@@ -92,7 +90,7 @@ v-velocity predictor (SIMPLE) for 2D steady-state simulations
 function solve_v_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::CorrectionCoefficients2D,
     velocity::VectorFieldStaggered2D, pressure::Array{Float64,2},
     props::FluidProperties, grid::GridRegular2D;
-    max_itr::Int=1, tol::Float64=1e-9)::Int64
+    dt::Float64=0.0, max_itr::Int=1, tol::Float64=1e-9)::Int64
     for itr in 1:max_itr
         residual::Float64 = 0.0
         for j in 2:grid.ny
@@ -117,12 +115,18 @@ function solve_v_momentum!(tentative_velocity::VectorFieldStaggered2D, ccfs::Cor
                     + dy_cell * (props.mu / props.rho) * (1 / dx_e + 1 / dx_w)
                     + dx_cell * (props.mu / props.rho) * (1 / dy_n + 1 / dy_s)
                 )
+                if dt != 0.0
+                    a_ij += dx_cell * dy_cell / dt
+                end
                 a_ip1::Float64 = -dy_cell * u_E / 2 + dy_cell * (props.mu / props.rho) / dx_e
                 a_im1::Float64 = dy_cell * u_W / 2 + dy_cell * (props.mu / props.rho) / dx_w
                 a_jp1::Float64 = -dx_cell * v_N / 2 + dx_cell * (props.mu / props.rho) / dy_n
                 a_jm1::Float64 = dx_cell * v_S / 2 + dx_cell * (props.mu / props.rho) / dy_s
                 A_n::Float64 = -dx_cell / props.rho
                 b::Float64 = A_n * (pressure[i, j] - pressure[i, j-1])
+                if dt != 0.0
+                    b += velocity.v[i, j] * dx_cell * dy_cell / dt
+                end
                 #
                 ccfs.d_v[i, j] = A_n / a_ij
                 v_old = tentative_velocity.v[i, j]
