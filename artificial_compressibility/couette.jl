@@ -62,7 +62,7 @@ function main()
         calc_dvdtau!(dvdtau, u, v, p, dx, dy, rho, mu)
         calc_dpdtau!(dpdtau, u, v, p, dx, dy, beta)
 
-        if taudx % 25 == 0
+        if taudx % 100 == 0
             dudtau_mag = sum(dudtau .* dudtau)
             dvdtau_mag = sum(dvdtau .* dvdtau)
             dpdtau_mag = sum(dpdtau .* dpdtau)
@@ -86,13 +86,13 @@ function main()
     xlist = collect(0:dx:LX)
     ylist = collect(0:dy:LY)
     contourf(xlist, ylist, p, color=:viridis)
-    savefig("contour.png")
+    savefig("couette_contour.png")
     Plots.CURRENT_PLOT.nullableplot = nothing
 
     # TODO
     X, Y = [xlist[i] for i in 1:NX, j in 1:NY], [ylist[j] for i in 1:NX, j in 1:NY]
     quiver!(X, Y, quiver=(u, v), color=:black)
-    savefig("quiverplot.png")
+    savefig("couette_quiverplot.png")
     Plots.CURRENT_PLOT.nullableplot = nothing
 end
 
