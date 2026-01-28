@@ -1,8 +1,8 @@
-include("src/Types.jl")
-include("src/MomentumEquations.jl")
-include("src/Corrections.jl")
-include("src/BoundaryConditions.jl")
-include("src/Utilities.jl")
+include("Types.jl")
+include("MomentumEquations.jl")
+include("Corrections.jl")
+include("BoundaryConditions.jl")
+include("Utilities.jl")
 using .Types
 using .MomentumEquations
 using .Corrections
